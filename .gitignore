@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.streamlit/secrets.toml
+.env
+tmdb_5000_movies.csv
+tmdb_5000_credits.csv
+tmdb_movies.db
+knowledge_base/
+faiss_index/

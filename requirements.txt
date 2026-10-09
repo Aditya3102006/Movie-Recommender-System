@@ -1,0 +1,5 @@
+streamlit
+pandas
+requests
+numpy
+pickle5; python_version < "3.8"
