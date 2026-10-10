@@ -150,6 +150,7 @@ if st.button("🚀 Show Recommendations", type="primary", use_container_width=Tr
         names, posters = recommend(selected_movie)
         st.session_state["rec_names"]   = names
         st.session_state["rec_posters"] = posters
+        st.session_state["chat_history"] = []  # Fresh start for AI Assistant
 
 # Show recommendations if available
 if "rec_names" in st.session_state:
@@ -165,8 +166,14 @@ if "rec_names" in st.session_state:
 
     # ── AI Chat Section ───────────────────────────────────────────────────────
     st.markdown("---")
-    st.markdown("### 💬 Ask AI Assistant about these recommendations")
-    st.caption("Ask why these movies were recommended, which ones are sci-fi, want a quick summary, etc.")
+    chat_col1, chat_col2 = st.columns([4, 1])
+    with chat_col1:
+        st.markdown("### 💬 Ask AI Assistant about these recommendations")
+        st.caption("Ask why these movies were recommended, which ones are sci-fi, want a quick summary, etc.")
+    with chat_col2:
+        if st.button("🧹 Clear Chat", use_container_width=True):
+            st.session_state["chat_history"] = []
+            st.rerun()
 
     # Chat history
     if "chat_history" not in st.session_state:
