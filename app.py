@@ -81,8 +81,8 @@ def ask_groq(user_question, movie_titles: list):
         "Content-Type": "application/json",
     }
     
-    # Supported Groq models (llama3-70b-8192 was decommissioned by Groq)
-    models_to_try = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
+    # Active Groq models tested and verified
+    models_to_try = ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"]
     
     for model_name in models_to_try:
         payload = {
