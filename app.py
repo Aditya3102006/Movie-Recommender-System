@@ -80,29 +80,40 @@ def ask_groq(user_question, movie_titles: list):
         "Authorization": f"Bearer {groq_key}",
         "Content-Type": "application/json",
     }
-    payload = {
-        "model": "llama3-70b-8192",          # ← current working Groq model
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user",   "content": user_question},
-        ],
-        "temperature": 0.7,
-        "max_tokens": 512,
-    }
+    
+    # Supported Groq models (llama3-70b-8192 was decommissioned by Groq)
+    models_to_try = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
+    
+    for model_name in models_to_try:
+        payload = {
+            "model": model_name,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user",   "content": user_question},
+            ],
+            "temperature": 0.7,
+            "max_tokens": 512,
+        }
 
-    try:
-        resp = requests.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers=headers,
-            json=payload,
-            timeout=15,
-        )
-        resp.raise_for_status()
-        return resp.json()["choices"][0]["message"]["content"]
-    except requests.exceptions.HTTPError as e:
-        return f"Could not connect to Groq API or generate response: {e}"
-    except Exception as e:
-        return f"Unexpected error: {e}"
+        try:
+            resp = requests.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers=headers,
+                json=payload,
+                timeout=15,
+            )
+            if resp.status_code == 200:
+                return resp.json()["choices"][0]["message"]["content"]
+            else:
+                err_detail = resp.json().get("error", {}).get("message", resp.text)
+                if model_name == models_to_try[-1]:
+                    return f"Groq API Error ({resp.status_code}): {err_detail}"
+                continue
+        except Exception as e:
+            if model_name == models_to_try[-1]:
+                return f"Unexpected error: {e}"
+            continue
+    return "Could not generate response from Groq."
 
 # ── Load Precomputed Data ─────────────────────────────────────────────────────
 @st.cache_resource
